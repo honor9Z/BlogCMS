@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录</title>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <script src="/static/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="/static/mycss/login.css">
+    <script src="http://static.geetest.com/static/tools/gt.js"></script>
+</head>
+<body>
+
+<div class="container popup">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">username</label>
+                    <input type="text" class="inp form-control" id="username" placeholder="请输入你的用户名">
+                </div>
+                <div class="form-group">
+                    <label for="Password">Password</label>
+                    <input type="password" class="inp form-control" id="password" placeholder="请输入你的密码">
+                </div>
+
+                <div class="row validCode">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="validCode">验证码</label>
+                            <input type="validCode" class="form-control" id="validCode" placeholder="请输入验证码">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {#验证码图片，路由获得#}
+                        <img class="validCode_img" src="/get_validCode_img/" alt="" width="200px" height="50px">
+                    </div>
+                </div>
+
+                <input type="btn" value="登录" class="btn btn-primary"><span class="errorMsg"></span>
+            </form>
+            <a href="/reg/">暂无账号，点我注册</a>
+        </div>
+    </div>
+</div>
+
+{#<script>#}
+{#    var handlerPopup = function (captchaObj) {#}
+{#        // 成功的回调#}
+{#        captchaObj.onSuccess(function () {#}
+{#            var validate = captchaObj.getValidate();#}
+{#            $.ajax({#}
+{#                url: "/pc-geetest/ajax_validate", // 进行二次验证#}
+{#                type: "post",#}
+{#                dataType: "json",#}
+{#                data: {#}
+{#                    username: $('#username1').val(),#}
+{#                    password: $('#password1').val(),#}
+{#                    geetest_challenge: validate.geetest_challenge,#}
+{#                    geetest_validate: validate.geetest_validate,#}
+{#                    geetest_seccode: validate.geetest_seccode#}
+{#                },#}
+{#                success: function (data) {#}
+{#                    $(document.body).html('<h1>登录成功</h1>')#}
+{#                    if (data && (data.status === "success")) {#}
+{#                        $(document.body).html('<h1>登录成功</h1>');#}
+{#                    } else {#}
+{#                        $(document.body).html('<h1>登录失败</h1>');#}
+{#                    }#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#        $("#popup-submit").click(function () {#}
+{#            captchaObj.show();#}
+{#        });#}
+{#        // 将验证码加到id为captcha的元素里#}
+{#        captchaObj.appendTo("#popup-captcha");#}
+{#        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html#}
+{#    };#}
+{#    // 验证开始需要向网站主后台获取id，challenge，success（是否启用failback）#}
+{#    $.ajax({#}
+{#        url: "/pc-geetest/register?t=" + (new Date()).getTime(), // 加随机数防止缓存#}
+{#        type: "get",#}
+{#        dataType: "json",#}
+{#        success: function (data) {#}
+{#            // 使用initGeetest接口#}
+{#            // 参数1：配置参数#}
+{#            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件#}
+{#            initGeetest({#}
+{#                gt: data.gt,#}
+{#                challenge: data.challenge,#}
+{#                product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效#}
+{#                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注#}
+{#                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config#}
+{#            }, handlerPopup);#}
+{#        }#}
+{#    });#}
+{#</script>#}
+
+
+{#自己写的ajax#}
+<script>
+
+    $('.btn').click(function () {
+        $.ajax({
+            url: '/login/',
+            type: 'POST',
+            data: {
+                "username": $('#username').val(),
+                "password": $('#password').val(),
+                "validCode": $('#validCode').val(),
+                "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                var response = JSON.parse(data);
+                var prevLink = document.referrer;
+                if (response["is_login"]) {
+                    alert(prevLink)
+                    location.href = prevLink// 登陆后跳转回原页面
+                }
+                else {
+                    $(".errorMsg").html(response["error_msg"]).css("color", "red")
+                }
+            }
+        })
+    })
+    $('.validCode_img').click(function () {
+        $(this)[0].src += '?'// 点击验证码图片时刷新验证码
+    })
+
+
+</script>
+</form>
+</body>
+</html>

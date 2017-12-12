@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>后台管理</title>
+    <script src="/static/jquery-3.2.1.min.js"></script>
+
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="/static/kindeditor/kindeditor-all.js"></script>
+
+
+
+</head>
+<body>
+
+
+
+<div class="container c1">
+<div class="header">
+    <h1>后台管理</h1>
+</div>
+    <hr>
+    <div class="row">
+        <div class="leftMenu col-md-2">
+
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-success"><a href="/blog/backend/">文章管理</a></li>
+              <li class="list-group-item list-group-item-info"><a href="">标签管理</a></li>
+              <li class="list-group-item list-group-item-warning"><a href="">分类管理</a></li>
+            </ul>
+        </div>
+        <div class="manageCon col-md-8">
+
+            {% block manageCon %}
+                <div class="addbutton">
+                       <a href="/blog/backend/addarticle/"><button class="btn btn-primary">添加文章</button></a>
+                </div>
+
+                <table class="table table-border table-hover">
+                     <tr>
+                         <th>标题</th>
+                         <th>评论数</th>
+                         <th>点赞数</th>
+                         <th>操作</th>
+                         <th>操作</th>
+                     </tr>
+
+                     {% for article in article_list %}
+                       <tr>
+                           <td>{{ article.title }}</td>
+                           <td>{{ article.comment_count }}</td>
+                           <td>{{ article.up_count }}</td>
+                           <td><a href="/blog/backend/editarticle/{{ article.nid }}"><button class="btn btn-info">编辑</button></a></td>
+                           <td><a href="/blog/backend/del/{{ article.nid }}"><button class="btn btn-danger">删除</button></a></td>
+
+                       </tr>
+                     {% endfor %}
+                </table>
+
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

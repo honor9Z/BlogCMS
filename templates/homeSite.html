@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %} 个人首页 {% endblock %}</title>
+    <script src="/static/jquery-3.2.1.min.js"></script>
+
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="/static/mycss/homeSite.css">
+    <link rel="stylesheet" href="/static/mycss/article_detail.css">
+    <link rel="stylesheet" href="/static/user_home_style/{{ current_user.blog.theme }}">
+    <script src="/static/kindeditor/kindeditor-all.js"></script>
+
+</head>
+<body>
+<nav class="navbar navbar-inverse" id="nav">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">博客园</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/blog/{{ current_user.username }}">{{ current_user.blog.title }} <span class="sr-only">(current)</span></a>
+                </li>
+                <li><a href="#">Link</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/">首页</a></li>
+                <li><a href="#">新随笔</a></li>
+                <li><a href="#">联系</a></li>
+                <li><a href="#">订阅</a></li>
+                <li><a href="#">管理</a></li>
+                {% if request.user.is_authenticated %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">
+
+                            {{ request.user.username }}
+
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/blog/{{ request.user.username }}">个人首页</a></li>
+                        <li><a href="/blog/backend/">文章管理</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/log_out/">注销</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                    <li><a href="/login/">请登录</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">公告</div>
+                <div class="panel-body">
+                    <p><b>Python开发交流群：255012808</b></p>
+                    <p><b>Python开发交流群：255012808</b></p>
+                    <p><b>Python开发交流群：255012808</b></p>
+                    <p><b>Python技术交流群：557877767</b></p>
+                    <p><b>开源Tyrion交流群：564068039</b></p>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">个人信息</div>
+                <div class="panel-body">
+                    <p><img class="img-circle " src="{{ current_user.avatar.url }}" alt="" height="100" width="100"></p>
+
+                    <h3>昵称：{{ current_user.username }}</h3>
+                </div>
+            </div>
+            <div class="panel panel-danger">
+                <div class="panel-heading">我的标签</div>
+                <div class="panel-body">
+                <ul class="list-group">
+                    {% for foo in current_user.blog.tag_set.all %}
+                        <li class="list-group-item">
+                            <span class="badge">{{ foo.article_set.count }}</span>
+                            <a href="/blog/{{ current_user.username }}/tag/{{ foo.nid }}">{{ foo.title }}</a>
+                        </li>
+{#                        <p>#}
+{#                            <a href="/blog/{{ current_user.username }}/tag/{{ foo.nid }}">{{ foo.title }}({{ foo.article_set.count }})</a>#}
+{#                        </p>#}
+                    {% endfor %}
+                </ul>
+
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">随笔分类</div>
+                <div class="panel-body">
+                <ul class="list-group">
+                    {% for foo in current_user.blog.category_set.all %}
+                        <li class="list-group-item">
+                            <span class="badge">{{ foo.article_set.count }}</span>
+                            <a href="/blog/{{ current_user.username }}/category/{{ foo.nid }}">{{ foo.title }}</a>
+                        </li>
+{#                        <p>#}
+{#                            <a href="/blog/{{ current_user.username }}/category/{{ foo.nid }}">{{ foo.title }}({{ foo.article_set.count }})</a>#}
+{#                        </p>#}
+                    {% endfor %}
+                </ul>
+
+
+
+                </div>
+            </div>
+            <div class="panel panel-success">
+                <div class="panel-heading">随笔档案</div>
+                <div class="panel-body">
+                <ul class="list-group">
+                    {% for date in date_list %}
+                        <li class="list-group-item">
+                            <span class="badge">{{ date.1 }}</span>
+<a href="/blog/{{ current_user.username }}/date/{{ date.0 }}">{{ date.0 }}{{ date.1 }}</a>                        </li>
+{#                   <p>#}
+{#                        <a href="/blog/{{ current_user.username }}/date/{{ date.0 }}">{{ date.0 }}({{ date.1 }})</a>#}
+{#                        </p>#}
+
+                    {% endfor %}
+                </ul>
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+            <div class="col-md-9 c1">
+        {% block con %}
+
+                {% for foo in article_list %}
+                    <div class="article">
+                        <div class="head">
+                            <h3>
+                                <a href="/blog/{{ current_user.username }}/article_detail/{{ foo.nid }}">{{ foo.title }}</a>
+                            </h3>
+                        </div>
+                        <div class="desc">
+                            {{ foo.desc }}
+                        </div>
+                        <div class="foot pull-right">
+                            posted@ <span>{{ foo.create_time|date:"Y-m-d" }}</span>&nbsp;
+                            <span>评论({{ foo.comment_count }})</span>&nbsp;
+                            <span>点赞({{ foo.up_count }})</span>&nbsp;
+                            <span>阅读({{ foo.read_count }})</span>
+
+                        </div>
+                        <p></p>
+                    </div>
+                {% endfor %}
+
+                {% endblock %}
+        </div>
+
+    </div>
+</div>
+
+<div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>注册</title>
+        <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+        <script src="/static/jquery-3.2.1.min.js"></script>
+        <link rel="stylesheet" href="/static/mycss/reg.css">
+        <script src="/static/js/jquery.cookie.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="">
+                {% csrf_token %}{#Django自带的防止攻击的中间件#}
+                <div class="form-group">
+                    <label for="username">用户名：</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="password">密码：</label>
+                    {{ form.password }}
+                </div>
+                <div class="form-group">
+                    <label for="repeat_pwd">确认密码：</label>
+                    {{ form.repeat_pwd }}
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱：</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group picDiv">
+                    <label for="picBtn">头像：</label>
+                    <img id="pic" class="pic" src="/static/img/default.png" alt="">
+                    <input id="picBtn" type="file" class="picBtn">
+                </div>
+                <div class="sub" style="padding-top: 50px">
+                <input type="button" value="submit" class="btn btn-primary" id="subBtn"><span class="error"></span>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 头像预览,固定代码
+
+    $("#picBtn").change(function () {
+        var ele_file=$(this)[0].files[0];  //this.files
+        var reader=new FileReader();
+        reader.readAsDataURL(ele_file);
+        reader.onload=function () {
+            $("#pic")[0].src=this.result
+        }
+
+    });
+
+    // ajax提交数据
+    $("#subBtn").click(function () {
+
+        var formdata=new FormData();
+        formdata.append("username",$("#id_username").val());
+        formdata.append("password",$("#id_password").val());
+        formdata.append("repeat_pwd",$("#id_repeat_pwd").val());
+        formdata.append("email",$("#id_email").val());
+        formdata.append("pic",$("#picBtn")[0].files[0]);
+
+        $.ajax({
+            url:"/reg/",
+            type:'POST',
+            data:formdata,
+            contentType:false,
+            processData:false,
+            headers:{"X-CSRFToken":$.cookie('csrftoken')},//中间件的值，必须写
+            success:function (data) {
+                  console.log(data);
+                var data=JSON.parse(data);//将后端传来的json字符串转成js字符串
+
+                if (data.user){
+                    // 注册成功自动跳转至登录页面
+                    location.href="/login/"
+                }
+                else {
+                    // 查看错误信息
+                    console.log(data.errorsList);
+
+                   $.each(data.errorsList,function (i,j) {
+                       console.log(i,j);
+                        // 将错误信息打印到相对应的输入框下仿
+                       $span=$("<span>");
+                       $span.addClass("pull-right").css("color","red");
+                       $span.html(j[0]);
+                       $("#id_"+i).after($span).parent().addClass("has-error")
+
+                       if (i=="__all__"){
+                           // 全局钩子捕捉到错误
+                            $("#id_repeat_pwd").after($span)
+                       }
+                   })
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>

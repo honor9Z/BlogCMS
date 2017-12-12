@@ -1,0 +1,337 @@
+{% extends 'homeSite.html' %}
+{% block title %}文章详情{% endblock %}
+
+{% block con %}
+
+    <div class="article_title" id="article_title"><h3>{{ current_article.title }}</h3></div>
+    <div class="article_con">
+        <div class="col-md-offset-1">{{ current_article.articledetail.content|safe }}</div>
+        <div class="warn">
+            <div class="warn_con"><img src="/static/img/warning.png" alt="" width="70" height="70"></div>
+            <div class="warn_con">
+                <p></p>
+                <p></p>
+                作者：{{ current_user.username }}
+                <br>
+                本文版权归作者和博客园共有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文连接。
+            </div>
+        </div>
+
+
+        <div class="post-info">
+            <img class="img-circle " src="{{ current_user.avatar.url }}" alt="" height="100" width="100">
+            作者：{{ current_user.username }}
+            <div id="digg">
+                <div class="diggit">
+                    <span class="diggnum" id="digg_count">{{ current_article.up_count }}</span>
+                </div>
+                <div class="buryit">
+                    <span class="burynum" id="bury_count">{{ current_article.down_count }}</span>
+                </div>
+                <div class="updownerror">
+                    <div class="up_error_div pull-left"><span class="up_error"></span></div>
+                    <div class="down_error_div pull-right"><span class="down_error"></span></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="comment-info">
+            <h3>已发表评论(评论树):</h3>
+         <div class="comment_tree_list">
+            <div class="content-tree-list">
+{#            由js代码从数据库中取得#}
+            </div>
+
+         </div>
+
+
+        <h2>----------------------------------------------------</h2>
+            <div class="comment-header"><h3>评论列表</h3></div>
+            <div class="content-list">
+{#            for循环从数据库中取到已发布的评论#}
+            {% for comment in current_article.comment_set.all %}
+                <div class="comment-time">
+                    #{{ forloop.counter }}楼：&nbsp;&nbsp;&nbsp;
+                    <img class="img-circle " src="{{ comment.user.avatar.url}}" alt="" width="30" height="30">
+                    <a href="/blog/{{ comment.user.username }}">{{ comment.user.username }}</a>
+                    &nbsp;&nbsp;{{ comment.create_time|date:'Y-m-d,h:i:s' }}
+                    <div class="pull-right">
+                        <a class="reply_comment_btn" comment_id="{{ comment.nid }}" conmment_username="{{ comment.user.username }}">回复</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="">引用</a>&nbsp;&nbsp;
+                    </div>
+                </div>
+                <div class="comment-detail">
+                {% if comment.parent_comment_id %}{#对评论的评论#}
+                 <div style="background-color: #c4e3f3">
+                       &nbsp;&nbsp;&nbsp;@<a href="">{{ comment.parent_comment.user.username }}</a> :&nbsp;&nbsp;&nbsp;{{ comment.parent_comment.content }}
+                 </div>
+                 {% endif %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;{{ comment.content }}{#对文章的评论#}
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+
+<div class="top"><a href="#nav">返回顶部</a></div>
+
+
+{#        用户在登录状态才显示评论区，方可进行评论#}
+    {% if request.user.is_authenticated %}
+        <div class="add-comment">
+            <div class="add-icon">
+                <img src="/static/img/addcomment.gif" alt="" height="20" width="20">
+                <b><span>发表评论</span></b>
+            </div>
+            <div class="comment-user">
+                昵称：<input type="text" disabled value="{{ request.user.username }}">
+            </div>
+            <div class="comment-text">
+                <div>评论内容：</div>
+{#                <textarea name="textarea" id="textarea" cols="30" rows="10"></textarea>#}
+                <textarea id="textarea" name="textarea" style="width:500px;height:300px;"></textarea>
+                <p><button class="btn btn-primary comment-btn">提交评论</button></p>
+            </div>
+        </div>
+    {% else %}{#访客未登录时只显示提示信息，不显示评论框#}
+        <div id="comment_form_container">
+            <div class="login_tips">
+                <img src="/static/img/addcomment.gif" alt="" height="20" width="20">
+                注册用户登录后才能发表评论，请 <a href="/login/" >登录</a> 或 <a href="/reg/">注册</a>，<a href="/">访问</a>网站首页。
+            </div>
+        </div>
+    {% endif %}
+    </div>
+    <script>
+        $('.diggit').click(function () {
+            $.ajax({
+                url: '/blog/updown/',
+                type: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    article_id: '{{ current_article.nid }}',
+                    up: 'up'
+                },
+                success: function (data) {
+                    var data = JSON.parse(data)
+                    if (data.is_login !== true) {
+                        alert(location.href)
+                        location.href = '/login/'
+                    }
+                    else if (data.state) {
+                        $('#digg_count').html(parseInt($('#digg_count').html()) + 1)
+                    }
+                    else if (data.is_repeat) {
+                        $('.up_error').html('重复推荐')
+                        setTimeout(function () {
+                            $('.up_error').html('')
+                        }, 3000);
+                    }
+                    ;
+                }
+            })
+        })
+        $('.buryit').click(function () {
+
+            $.ajax({
+
+                url: '/blog/updown/',
+                type: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    article_id: '{{ current_article.nid }}',
+                    'down': 'down'
+                },
+                success: function (data) {
+
+                    var data = JSON.parse(data)
+                    if (data.is_login !== true) {
+                        alert(location.href)
+                        location.href = '/login/'
+                    }
+                    else if (data.state) {
+                        $('#bury_count').html(parseInt($('#bury_count').html()) + 1)
+                    }
+                    else if (data.is_repeat) {
+                        $('.down_error').html('重复反对')
+                    }
+                }
+
+
+            })
+        })
+
+
+        $('.comment-btn').click(function () {
+            var content
+            if(parent_comment_id){
+            var index=$("#textarea").val().indexOf("\n");     // 子评论
+            content= $("#textarea").val().slice(index+1)
+            }
+            else {
+            content=$("#textarea").val()
+            }
+            $.ajax({
+
+                url:'/blog/comment/',
+                type:'POST',
+                data:{
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    article_id:'{{ current_article.nid }}',
+                    content:content,
+                    parent_comment_id:parent_comment_id
+                },
+                success:function (data) {
+
+                    var data = JSON.parse(data)
+
+                    if (data.is_login !== true) {
+                        location.href = '/login/'
+                    }
+
+                    else if (parent_comment_id) {
+{#                        s='<div class="comment_item" style="border-bottom: 1px solid grey">' +#}
+{#                            '<div class="row"> ' +#}
+{#                                '<div class="col-md-6"> ' +#}
+{#                                '<img src="{{ request.user.avatar.url}}" alt="" width="30" height="30"> <a href="/blog/{{ request.user.username }}">{{ request.user.username }}</a> 发表于 '#}
+{#                                +data.create_time.slice(0,19)+#}
+{#                            ' </div> <div class="pull-right"> <a class="reply_comment_btn" comment_id="'#}
+{#                            +data.comment_id+#}
+{#                            '" conmment_username="{{ request.user.username }}">回复</a> <a href="">支持</a> </div> </div>'#}
+{#                            +' <div style="background-color: grey">@<a href="">'#}
+{#                            +data.parent_comment_username+'</a> :&nbsp;&nbsp;&nbsp;'#}
+{#                            +data.parent_comment_content+'</div>'+' <div>'+content+' </div> </div>'#}
+s='<div class="comment-time">#新楼：&nbsp;&nbsp;&nbsp; <img class="img-circle " src="{{ request.user.avatar.url}}" alt="" width="30" height="30"> <a href="/blog/{{ request.user.username }}">{{ request.user.username }}</a> &nbsp;&nbsp;'+
+                        data.create_time.slice(0,19)+
+                    '<div class="pull-right"> <a class="reply_comment_btn" comment_id="'+
+                            data.comment_id+
+                    '"  conmment_username="{{ request.user.username }}">回复</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="">引用</a>&nbsp;&nbsp; </div> </div> <div class="comment-detail">'+
+    ' <div style="background-color: #c4e3f3">&nbsp;&nbsp;&nbsp;@<a href="">'+
+                            data.parent_comment_username+'</a> :&nbsp;&nbsp;&nbsp;'+
+                            data.parent_comment_content+'</div>'+' <div>'+content+'</div>'}
+                   else { // 根评论
+s='<div class="comment-time">#新楼：&nbsp;&nbsp;&nbsp; <img class="img-circle " src="{{ request.user.avatar.url}}" alt="" width="30" height="30"> <a href="/blog/{{ request.user.username }}">{{ request.user.username }}</a> &nbsp;&nbsp;'+
+                        data.create_time.slice(0,19)+
+                    '<div class="pull-right"> <a class="reply_comment_btn" comment_id='+
+                            data.comment_id+
+                    ' conmment_username="{{ request.user.username }}">回复</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="">引用</a>&nbsp;&nbsp; </div> </div> <div class="comment-detail">'+
+   ' <div>'+content+'</div>'
+                }
+
+                $(".content-list").append(s);
+
+
+                $("#textarea").val("");
+                parent_comment_id=null;
+
+
+
+                }
+            })
+        })
+
+
+
+    // 回复按钮
+    var  parent_comment_id=null;
+    $(".comment-info").on("click",".reply_comment_btn",function () {
+           // 文本框中显示父评论的名字
+           var parent_comment_username=$(this).attr("conmment_username");
+           $("#textarea").focus();
+           $("#textarea").val("@"+parent_comment_username+"\n");
+
+           //  获取父评论的comment_id
+           parent_comment_id=$(this).attr("comment_id")
+
+
+    });
+
+
+        // 获取评论树
+    $.ajax({
+        url:"/blog/commentTree/{{ current_article.nid }}",
+        success:function (data) {
+
+            var data=JSON.parse(data)
+            var s=showCommentTree(data);
+            $(".content-tree-list").append(s);
+        }
+    });
+
+    // 展开评论树
+
+
+    var dict={'father':true}
+    function showCommentTree(comment_list) {    //  comment_list: [{"content":"1","children_list":[{}]},{"content":"2"},{"content":"3"},]
+        var html="";
+
+        $.each(comment_list,function (i,comment_dict) {
+
+            if(dict.father){var num=i+1+'楼';num='#'+num}
+            else{var num='回复楼'}
+{#            var num=i+1#}
+            var val=comment_dict["content"];
+            var commnent_str= '<div class="comment"><div class="comment-time">'+num+'：&nbsp;&nbsp;&nbsp; <img class="img-circle " src="/media/'+comment_dict["user__avatar"]+'" alt="" width="30" height="30"> <a href="/blog/'+comment_dict["user__username"]+'">'+comment_dict["user__username"]+'</a> &nbsp;&nbsp;'+comment_dict["create_time"]+' <div class="pull-right"> <a class="reply_comment_btn" comment_id="'+comment_dict["nid"]+'" conmment_username="'+comment_dict["user__username"]+'">回复</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="">引用</a>&nbsp;&nbsp; </div></div><div class="comment-detail"><span>&nbsp;&nbsp;'+val+'</span></div>';
+            num+=1
+            if(comment_dict["chidren_commentList"]){
+                dict.father=false
+{#                var num='评论'#}
+                var s=showCommentTree(comment_dict["chidren_commentList"]);    // [{},{}]
+                commnent_str+=s
+                dict.father=true
+                }
+
+            commnent_str+="</div>";
+            html+=commnent_str
+
+        });
+
+        return html
+    }
+
+
+
+    </script>
+
+
+{#    kindeditor加载必写#}
+{#    <script>#}
+{#        KindEditor.create('#textarea', {#}
+{#            items:[#}
+{#                    'source', '|', 'undo', 'redo', '|',  'cut', 'copy', 'paste',#}
+{#                    'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',#}
+{#                    'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',#}
+{#                    'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',#}
+{#                    'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',#}
+{#                    'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',#}
+{#                    'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons',  'pagebreak',#}
+{#                    'anchor', 'link', 'unlink', '|',#}
+{#            ]#}
+{##}
+{##}
+{##}
+{#        });#}
+{##}
+{##}
+{##}
+{#    </script>#}
+
+
+{% endblock %}
+
+
+{#<div class="comment">#}
+{#    <div class="content-head">#}
+{#        #{{ forloop.counter }}楼：&nbsp;&nbsp;&nbsp;#}
+{#        <img src="{{ comment.user.avatar.url}}" alt="" width="30" height="30">#}
+{#        <a href="/blog/{{ comment.user.username }}">{{ comment.user.username }}</a>#}
+{#        &nbsp;&nbsp;{{ comment.create_time|date:'Y-m-d,h:i:s' }}#}
+{#        <div class="pull-right">#}
+{#            <a class="reply_comment_btn" comment_id="{{ comment.nid }}" conmment_username="{{ comment.user.username }}">回复</a>&nbsp;&nbsp;&nbsp;&nbsp;#}
+{#            <a href="">引用</a>&nbsp;&nbsp;#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="content">#}
+{#        <span>'+val+'</span>#}
+{#    </div>#}

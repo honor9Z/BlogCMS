@@ -1,0 +1,50 @@
+{% extends "backendindex.html" %}
+
+
+{% block manageCon %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                {% csrf_token %}
+                <div id="Editor_Edit_Header" class="CollapsibleTitle">
+                    <span id="Editor_Edit_headerTitle">添加随笔</span>
+                </div>
+
+
+
+    <form action="/blog/backend/addarticle/" method="post" novalidate>
+         {% csrf_token %}
+             <div class="form-group">
+                <label for="exampleInputEmail1">标题：</label>
+                {{ article_form.title }}
+             </div>
+
+         <div>
+             <label for="title">内容：</label>
+             <p>
+                 {{ article_form.content }}
+
+             </p>
+         </div>
+        <p><input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;提交&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" class="btn btn-info"></p>
+    </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+     KindEditor.ready(function(K) {
+                window.editor = K.create('#id_content',{
+                        width:"950px",
+                        height:"500px",
+                        resizeType:0,
+                        uploadJson:"/uploadFile/",
+                        extraFileUploadParams:{
+                           csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                       }
+                });
+     })
+</script>
+{% endblock %}
+

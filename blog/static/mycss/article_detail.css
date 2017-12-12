@@ -1,0 +1,103 @@
+.article_con{
+    padding-left: 14px;
+}
+
+.article_title{
+    text-align: center;
+    color: #2b669a;
+}
+.warn{
+    border: #e0e0e0 1px dashed;
+    margin: 20px 0;
+    font-family: 微软雅黑;
+    font-size: 11px;
+
+}
+.warn_con{
+    display: inline-block;
+    margin: 10px;
+}
+
+#digg{
+    float: right;
+    margin-bottom: 10px;
+    margin-right: 30px;
+    font-size: 12px;
+    width: 128px;
+    text-align: center;
+    margin-top: 10px;
+}
+.diggit{
+    background: url("/static/img/upup.gif") no-repeat;
+    float: left;
+    width: 46px;
+    height: 52px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 2px;
+    padding-top: 5px;
+}
+
+.buryit {
+    float: right;
+    margin-left: 20px;
+    width: 46px;
+    height: 52px;
+    background: url("/static/img/downdown.gif") no-repeat;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 2px;
+    padding-top: 5px;
+}
+.updownerror{
+    margin-top: 60px;
+    color: red;
+}
+.comment-info{
+    padding-top: 20px;
+
+}
+.comment-header{
+    border-bottom: 1px solid #ddd;
+}
+.comment-time{
+    margin-left: -20px;
+    padding: 10px;
+    font-size: 16px;
+}
+.comment-detail{
+        margin-left: -20px;
+    font-size: 14px;
+    padding: 0px 20px;
+    border-bottom: 1px dotted #ccc;
+    text-align: justify;
+}
+
+.add-icon{
+    padding: 20px 0 0 25px;
+}
+.add-icon span{
+    margin-left: 10px;
+}
+.comment-user input{
+    background-image: url("/static/img/icon_form.gif");
+    background-repeat: no-repeat;
+    border: 1px solid #ccc;
+    padding: 4px 4px 4px 30px;
+    width: 300px;
+    font-size: 13px;
+}
+
+textarea{
+    width: 450px;
+    height: 300px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    font-family: 'PingFang SC','Helvetica Neue','Helvetica','Arial',sans-serif;
+}
+
+
+.comment{
+    /*float: left;*/
+    margin-left: 40px;
+}

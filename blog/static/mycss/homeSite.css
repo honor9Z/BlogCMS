@@ -1,0 +1,31 @@
+        /*body{*/
+            /*background-color: #9acfea;*/
+        /*}*/
+        .article{
+            padding-bottom:20px;
+            border-bottom: solid;
+        }
+        .desc{
+            text-align: justify ;
+            font-size: 16px;
+        }
+        .foot{
+            font-size: 14px;
+            color: grey;
+        }
+        .c1{
+            background-color:white;
+        }
+        #comment_form_container{
+            margin-top: 80px;
+        }
+        .top{
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: whitesmoke;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: center;
+        }

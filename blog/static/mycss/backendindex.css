@@ -1,0 +1,25 @@
+.c1{
+    padding-top: 80px;
+}
+.list-group{
+    text-align: center;
+}
+.addbutton{
+    margin-bottom: 20px;
+}
+
+.CollapsibleTitle {
+    font-size: 105%;
+    background: #E5EEF7;
+    border-top: 1px solid #AAAAAA;
+    border-bottom: 1px dashed #AAAAAA;
+    font-weight: bold;
+    color: #333333;
+    width: auto;
+    padding: 2px 12px;
+    margin: 12px 0px 5px 0px;
+    clear: left;
+}
+
+
+
