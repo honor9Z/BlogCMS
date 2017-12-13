@@ -18,11 +18,7 @@ from django.contrib import admin
 from django.views.static import serve
 from blog import views
 from blogCMS1 import settings
-# from code_plug_in.views import pcgetcaptcha
-# from code_plug_in.views import pcvalidate
-# from code_plug_in.views import pcajax_validate
-# from code_plug_in.views import mobileajax_validate
-# from code_plug_in.views import home
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),#Django自带
 
@@ -47,10 +43,4 @@ urlpatterns = [
     url(r'^uploadFile/$', views.uploadFile),#添加文章时上传图片
 
 
-    # url(r'^pc-geetest/register', pcgetcaptcha, name='pcgetcaptcha'),
-    # url(r'^mobile-geetest/register', pcgetcaptcha, name='mobilegetcaptcha'),
-    # url(r'^pc-geetest/validate$', pcvalidate, name='pcvalidate'),
-    # url(r'^pc-geetest/ajax_validate',pcajax_validate, name='pcajax_validate'),
-    # url(r'^mobile-geetest/ajax_validate',mobileajax_validate, name='mobileajax_validate'),
-    # url(r'/*', home, name='home'),
 ]
