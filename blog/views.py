@@ -7,7 +7,7 @@ from blogCMS1 import settings
 from django.contrib import auth
 
 def index(request,*args,**kwargs):
-    print('222222222222222222222')
+    print('首页')
     if kwargs:#用户点击超链接，显示指定小分类下的文章
         article_list=models.Article.objects.filter(site_article_category__name=kwargs.get("site_article_category"))
     else:#默认，显示全部文章
@@ -16,10 +16,12 @@ def index(request,*args,**kwargs):
     return render(request,'index.html',{'article_list':article_list,'cate_list':cate_list})
 
 def log_out(request):
+    print('注销')
     auth.logout(request)
     return redirect("/login/")
 
 def log_in(request):
+    print('登录')
     if request.is_ajax():
         username=request.POST.get('username')
         password=request.POST.get('password')
@@ -42,6 +44,7 @@ def log_in(request):
 
 
 def edituser(request,nid):
+    print('修改密码')
     user_obj=models.UserInfo.objects.get(nid=nid)
     return render(request,'edit_user.html',{'user_obj':user_obj})
 
@@ -87,6 +90,7 @@ def get_validCode_img(request):
 
 
 def reg(request):
+    print('注册')
     if request.is_ajax():#ajax提交
         form_obj=RegForm(request.POST)#拿到页面提交的form对象
         print('................',form_obj)
@@ -111,10 +115,11 @@ def reg(request):
 
 
 def homeSite(request,username,**kwargs):
+    print('用户主页')
     # 查询当前用户站点
     current_user=models.UserInfo.objects.filter(username=username).first()
-    if not current_user:#如果当前用户异常，返回404页面
-        return render(request,'notFound.html')
+    # if not current_user:#如果当前用户异常，返回404页面
+    #     return render(request,'notFound.html')
     # 查询当前用户站点所有文章
     article_list=models.Article.objects.filter(user=current_user)
 
@@ -156,7 +161,7 @@ def homeSite(request,username,**kwargs):
     '''
     #因为时间对象用Django原生api方式取无法做到格式化输出，所以这里必须用到extra（数据库查询语句）
     date_list=models.Article.objects.filter(user=current_user).extra(select={"filter_create_date":"strftime('%%Y/%%m',create_time)"}).values_list("filter_create_date").annotate(Count("nid"))
-    print(date_list)
+    print('date_list=========',date_list)
 
     if kwargs:
         if kwargs.get("condition") == "category":
@@ -176,22 +181,27 @@ def homeSite(request,username,**kwargs):
 
 
 def article_detail(request,username,article_nid):
+    print('文章详情')
     # 查询当前用户
     current_user = models.UserInfo.objects.filter(username=username).first()
-    if not current_user:#用户异常时返回404页面
-        return render(request, 'notFound.html')
+    print('---------',current_user)
+    # if not current_user:#用户异常时返回404页面
+    #     return render(request, 'notFound.html')
     from django.db.models import Count, Sum
     #前端渲染时间时依然需使用extra
     date_list = models.Article.objects.filter(user=current_user).extra(
         select={"filter_create_date": "strftime('%%Y/%%m',create_time)"}).values_list(
         "filter_create_date").annotate(Count("nid"))
+    print('+++++++',date_list)
     #得到用户点击的文章标题对应的文章详情
-    current_article=models.Article.objects.filter(nid=article_nid).first()
+    current_article=models.Article.objects.filter(nid=1).first()
+    print(current_article)
     return render(request,'article_detail.html',locals())
 
 import json
 from django.db.models import F
 def updown(request):
+    print('赞')
     updown_response={'state':True,'is_repeat':None,'is_login':True,'down':None}
     if not request.user.is_authenticated():
         #未登录状态下不可赞和踩
@@ -262,6 +272,8 @@ def commentTree(request,article_id):
 
     print('s=====================')
     comment_list=models.Comment.objects.filter(article_id=article_id).values("nid","content","parent_comment_id","user__username","user__avatar",)
+
+    print('========',comment_list)
     j=0
     for i in comment_list:
         print('iiiiiiiiiiiiiii',i)
