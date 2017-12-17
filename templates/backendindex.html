@@ -25,7 +25,6 @@
     <hr>
     <div class="row">
         <div class="leftMenu col-md-2">
-
             <ul class="list-group">
               <li class="list-group-item list-group-item-success"><a href="/blog/backend/">文章管理</a></li>
               <li class="list-group-item list-group-item-info"><a href="">标签管理</a></li>
@@ -33,7 +32,7 @@
             </ul>
         </div>
         <div class="manageCon col-md-8">
-
+{#            因为add页面的排版相似，所以我们要建一个方便继承用的盒子#}
             {% block manageCon %}
                 <div class="addbutton">
                        <a href="/blog/backend/addarticle/"><button class="btn btn-primary">添加文章</button></a>

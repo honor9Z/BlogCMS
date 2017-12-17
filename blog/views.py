@@ -306,8 +306,8 @@ def commentTree(request,article_id):
 def backendindex(request):
     print('-------------------')
     if not request.user.is_authenticated():
-        return redirect("/login/")
-
+        return redirect("/login/")#未登录不可直接进入
+    #在后台管理需要渲染出自己写的博客，所以要拿到所有的文章
     article_list=models.Article.objects.filter(user=request.user).all()
     return  render(request,"backendindex.html",{"article_list":article_list})
 
@@ -316,9 +316,9 @@ def backendindex(request):
 import datetime
 def addarticle(request):
     response={'result':None}
-    if request.method=="POST":
-        article_form = ArticleForm(request.POST)
-        if article_form.is_valid():
+    if request.method=="POST":#点击保存按钮
+        article_form = ArticleForm(request.POST)#拿到input框中填入的数据
+        if article_form.is_valid():#数据没问题
             title=article_form.cleaned_data.get("title")
             content=article_form.cleaned_data.get("content")
             article_obj=models.Article.objects.create(title=title,desc=content[0:30],create_time=datetime.datetime.now(),user=request.user)
@@ -326,10 +326,10 @@ def addarticle(request):
             response['result'] = '添加成功<a href="/blog/backend/">点击返回</a>'
         else:
             response['result']='添加失败'
-
+        #添加成功后弹出添加成功的提示，然后给予一个点击可返回后台管理首页的按钮
         return HttpResponse(response['result'])
 
-    article_form=ArticleForm()
+    article_form=ArticleForm()#由form组件，生成input框
     return render(request,"addarticle.html",{"article_form":article_form})
 
 
@@ -337,11 +337,12 @@ def addarticle(request):
 
 def uploadFile(request):
 
-    file_obj=request.FILES.get("imgFile")
+    file_obj=request.FILES.get("imgFile")#拿到上传的图片
     file_name=file_obj.name
 
     from blogCMS1 import settings
     import os
+    #将图片文件写入到本地
     path=os.path.join(settings.MEDIA_ROOT,"article_uploads",file_name)
     with open(path,"wb") as f:
         for i in file_obj.chunks():
@@ -375,10 +376,10 @@ def editarticle(request,nid):
             response['result']='添加失败'
 
         return HttpResponse(response['result'])
-    article_obj=models.Article.objects.get(nid=nid)
+    article_obj=models.Article.objects.get(nid=nid)#需要知道被编辑的文章对象
     title=article_obj.title
     content=article_obj.articledetail.content
-    article_form=ArticleForm({"title":title,"content":content})
+    article_form=ArticleForm({"title":title,"content":content})#只允许编辑标题和内容
     return render(request,"editarticle.html",{"article_form":article_form,'nid':nid})
 
 

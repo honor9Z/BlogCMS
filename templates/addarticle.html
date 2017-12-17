@@ -1,6 +1,6 @@
 {% extends "backendindex.html" %}
 
-
+{#继承后台管理首页#}
 {% block manageCon %}
     <div class="container">
         <div class="row">
@@ -34,12 +34,14 @@
     </div>
 
     <script>
+    // 使用KindEditor必须写
      KindEditor.ready(function(K) {
                 window.editor = K.create('#id_content',{
-                        width:"950px",
-                        height:"500px",
-                        resizeType:0,
-                        uploadJson:"/uploadFile/",
+                        width:"950px",//宽，可设定
+                        height:"500px",//长，可设定
+                        resizeType:0,//参数为0、1、2，指代长款可不可调
+                        //还有其他许多可设定的功能，自行百度
+                        uploadJson:"/uploadFile/",//传图片时需要用到的路径
                         extraFileUploadParams:{
                            csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
                        }
